@@ -3,6 +3,7 @@ FROM python:3.10-slim
 WORKDIR /opt/todolist
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_NO_CACHE_DIR=off \
     PYTHON_PATH=/opt/todolist
 
 
