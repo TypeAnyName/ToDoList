@@ -42,13 +42,13 @@ class Goal(BaseModel):
         high = 3, "Высокий"
         critical = 4, "Критический"
 
-    tittle = models.CharField(verbose_name="Название", max_length=255)
+    title = models.CharField(verbose_name="Название", max_length=255)
     description = models.TextField(verbose_name="Описание", null=True, blank=True)
     category = models.ForeignKey(
-         to=GoalCategory,
-         verbose_name="Категория",
-         on_delete=models.CASCADE,
-         related_name='goals'
+        to=GoalCategory,
+        verbose_name="Категория",
+        on_delete=models.CASCADE,
+        related_name='goals'
     )
 
     status = models.PositiveSmallIntegerField(
@@ -72,3 +72,24 @@ class Goal(BaseModel):
         verbose_name="Автор",
         related_name="goals"
     )
+
+
+class GoalComment(BaseModel):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        verbose_name="Автор",
+        related_name="comments"
+    )
+    goal = models.ForeignKey(
+        Goal,
+        verbose_name="Цель",
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+    text = models.TextField(verbose_name="Текст")
+
+    class Meta:
+        verbose_name = 'Комментарий',
+        verbose_name_plural = "Комментарии"
+
