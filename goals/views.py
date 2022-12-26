@@ -20,9 +20,8 @@ class BoardCreateView(CreateAPIView):
 
 class BoardListView(ListAPIView):
     model = Board
-    permission_classes = [BoardPermission]
+    permission_classes = [permissions.IsAuthenticated, BoardPermission]
     serializer_class = BoardListSerializer
-    ordering = ['title']
 
     def get_queryset(self):
         return Board.objects.prefetch_related('participants').filter(
@@ -33,12 +32,12 @@ class BoardListView(ListAPIView):
 
 class BoardView(RetrieveUpdateDestroyAPIView):
     model = Board
-    permission_classes = [BoardPermission]
+    permission_classes = [permissions.IsAuthenticated, BoardPermission]
     serializer_class = BoardSerializer
 
     def get_queryset(self):
         return Board.objects.prefetch_related('participants').filter(
-            participants__user_id=self.request.user.id,
+            participants__user=self.request.user,
             is_deleted=False
         )
 

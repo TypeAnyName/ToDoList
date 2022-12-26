@@ -53,9 +53,13 @@ class GoalCreateSerializer(serializers.ModelSerializer):
     def validate_category(self, value: GoalCategory):
         if self.context["request"].user != value.user:
             raise PermissionDenied
+        if not BoardParticipant.objects.filter(
+            board_id=value.board_id,
+            role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+            user=self.context['request'].user,
+        ).exists():
+            raise PermissionDenied
 
-        if self.instance.category.board_id != value.board_id:
-            raise serializers.ValidationError("Transfer between projects not allowed")
         return value
 
 
