@@ -143,3 +143,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, "django_static")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+BOT_TOKEN = "5986119515:AAHkfPCWu7skj_cttsDXvYjSeeFYJvq7x_A"
