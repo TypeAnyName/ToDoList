@@ -20,7 +20,7 @@ class BoardCreateView(CreateAPIView):
 
 class BoardListView(ListAPIView):
     model = Board
-    permission_classes = [permissions.IsAuthenticated, BoardPermission]
+    permission_classes = [BoardPermission]
     serializer_class = BoardListSerializer
 
     def get_queryset(self):
@@ -32,7 +32,7 @@ class BoardListView(ListAPIView):
 
 class BoardView(RetrieveUpdateDestroyAPIView):
     model = Board
-    permission_classes = [permissions.IsAuthenticated, BoardPermission]
+    permission_classes = [BoardPermission]
     serializer_class = BoardSerializer
 
     def get_queryset(self):

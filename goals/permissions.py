@@ -21,7 +21,6 @@ class GoalCategoryPermission(IsAuthenticated):
 
 
 class GoalPermissions(IsAuthenticated):
-
     def has_object_permission(self, request, view, obj: Goal):
         filters: dict = {'user': request.user, 'board': obj.category.board}
         if request.method not in permissions.SAFE_METHODS:

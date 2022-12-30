@@ -5,13 +5,16 @@ from django.core.management import BaseCommand
 from ToDoList import settings
 from bot.models import TgUser
 from bot.tg.client import TgClient
+from bot.tg.fsm.memory_storage import MemoryStorage
 from bot.tg.models import Message
+from goals.models import Goal
 
 
 class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tg_client = TgClient(settings.BOT_TOKEN)
+        self.storage = MemoryStorage()
 
     @staticmethod
     def _generate_verification_code() -> str:
@@ -26,6 +29,27 @@ class Command(BaseCommand):
             text=f'[verification code] {tg_user.verification_code}'
         )
 
+    def handle_goals_list(self, msg: Message, tg_user: TgUser):
+        resp_goals: list[str] = [
+            f'#{goal.id} {goal.title}'
+            for goal in Goal.objects.filter(user_id=tg_user.user_id).order_by('created')
+        ]
+        if resp_goals:
+            self.tg_client.send_message(msg.chat.id, '\n'.join(resp_goals))
+        else:
+            self.tg_client.send_message(msg.chat.id, '[you have no goals]')
+
+    def handle_verified_user(self, msg: Message, tg_user: TgUser):
+        if msg.text == '/goals':
+            self.handle_goals_list(msg, tg_user)
+        elif msg.text == '/create':
+            ...
+        elif msg.text == "/cancel" and self.storage.get_state(tg_user.chat_id):
+            self.storage.reset(tg_user.chat_id)
+            self.tg_client.send_message(msg.chat.id, '[canceled]')
+        elif msg.text.startswith('/'):
+            self.tg_client.send_message(msg.chat.id, '[unknown command]')
+
     def handle_message(self, msg: Message):
         tg_user, _ = TgUser.objects.select_related('user').get_or_create(
             chat_id=msg.chat.id,
@@ -34,7 +58,7 @@ class Command(BaseCommand):
             }
         )
         if tg_user.user:
-            self.tg_client.send_message(chat_id=msg.chat.id, text='You have been already verified')
+            self.handle_verified_user(msg=msg, tg_user=tg_user)
         else:
             self.handle_unverified_user(msg=msg, tg_user=tg_user)
 
