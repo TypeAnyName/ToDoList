@@ -32,6 +32,19 @@ services:
       postgres:
         condition: service_healthy
 
+  bot:
+    image: ${DOCKERHUB_USERNAME}/todolist:master
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_HOST: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: python3 manage.py runbot
+
+
   frontend:
     image: sermalenk/skypro-front:lesson-38
     restart: always

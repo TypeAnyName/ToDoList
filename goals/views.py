@@ -22,6 +22,7 @@ class BoardListView(ListAPIView):
     model = Board
     permission_classes = [BoardPermission]
     serializer_class = BoardListSerializer
+    ordering = ['title']
 
     def get_queryset(self):
         return Board.objects.prefetch_related('participants').filter(
@@ -37,7 +38,7 @@ class BoardView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Board.objects.prefetch_related('participants').filter(
-            participants__user=self.request.user,
+            participants__user=self.request.user.id,
             is_deleted=False
         )
 
@@ -116,7 +117,7 @@ class GoalListView(ListAPIView):
         filters.OrderingFilter,
         filters.SearchFilter,
     ]
-    filterset_fields = ['category', 'priority', 'status']
+    # filterset_fields = ['category', 'priority', 'status']
     ordering_fields = ["title", "created"]
     ordering = ["title"]
     search_fields = ["title", "description"]

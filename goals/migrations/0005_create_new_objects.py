@@ -12,7 +12,7 @@ def create_objects(apps, schema_editor):
 
     with transaction.atomic():
         now = timezone.now()
-        for user in User.objects.all():
+        for user in User.objects.values_list('id', flat=True):
             new_board = Board(title='Мои цели', created=now, updated=now)
             BoardParticipant.objects.create(user=user, board=new_board, role=1, created=now, updated=now)
             GoalCategory.objects.filter(user=user).update(board=new_board)
