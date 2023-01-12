@@ -184,5 +184,5 @@ class GoalCommentView(RetrieveUpdateDestroyAPIView):
 
     def perform_destroy(self, instance: GoalComment):
         instance.is_deleted = True
-        instance.save(instance.save(update_fields=('is_deleted',)))
+        instance.save(instance.save())
         return instance

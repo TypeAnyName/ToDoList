@@ -1,7 +1,9 @@
+from datetime import datetime
+
 import factory
 
 from core.models import User
-from goals.models import Board, GoalCategory, Goal, GoalComment
+from goals.models import Board, GoalCategory, Goal, GoalComment, BoardParticipant
 
 from django.utils.timezone import now
 
@@ -21,6 +23,14 @@ class BoardFactory(factory.django.DjangoModelFactory):
     title = "test"
 
 
+class BoardParticipantFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = BoardParticipant
+
+    board = factory.SubFactory(BoardFactory)
+    user = factory.SubFactory(UserFactory)
+
+
 class GoalCategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = GoalCategory
@@ -37,6 +47,7 @@ class GoalFactory(factory.django.DjangoModelFactory):
     title = "test"
     description = "test description"
     due_date = factory.LazyAttribute(lambda x: now())
+    # due_date = datetime.now().strftime("%d.%m.%Y %I:%M:%S")
     status = 2
     priority = 2
     user = factory.SubFactory(UserFactory)
